@@ -129,10 +129,15 @@
           <h2 class="lead-title">Get a call from us 👋</h2>
           <p class="lead-sub">Leave your number — our admissions team will call you back within working hours. No spam, ever.</p>
 
-          <!-- EDIT: create a free form at https://formspree.io and paste your form ID below
-               Replace YOUR_FORM_ID. Until then, submissions fall back to WhatsApp automatically. -->
+          <!-- EDIT: paste your Web3Forms access key into the access_key value below.
+               The key is a PUBLIC client-side key — safe to commit. Until it's set,
+               submissions fall back to WhatsApp automatically so no lead is lost. -->
           <form id="lead-form" class="lead-form"
-                action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
+                action="https://api.web3forms.com/submit" method="POST">
+
+            <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY" />
+            <input type="hidden" name="subject" value="New callback request — Cocoon Preschool website" />
+            <input type="hidden" name="from_name" value="Cocoon Preschool Website" />
 
             <label class="field">
               <span class="field-label">Parent's name</span>
@@ -158,7 +163,8 @@
               </select>
             </label>
 
-            <!-- Honeypot: hidden from humans, catches spam bots -->
+            <!-- Honeypots: hidden from humans, catch spam bots (Web3Forms uses "botcheck") -->
+            <input type="checkbox" name="botcheck" class="hp" tabindex="-1" aria-hidden="true" />
             <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true" />
 
             <button type="submit" class="btn btn-primary btn-block btn-lg" data-track="form_submit">

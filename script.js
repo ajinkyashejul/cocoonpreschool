@@ -1,6 +1,6 @@
 /* ============================================================
    Cocoon Preschool — landing page behaviour
-   - Handles the callback form (Formspree + WhatsApp fallback)
+   - Handles the callback form (Web3Forms + WhatsApp fallback)
    - Honeypot spam protection
    - Google Ads conversion hooks (optional)
    ============================================================ */
@@ -42,7 +42,15 @@
   if (!form) return;
 
   var action = form.getAttribute("action") || "";
-  var formspreeConfigured = action.indexOf("YOUR_FORM_ID") === -1 && action.indexOf("formspree.io") !== -1;
+
+  // Is a real email backend wired up yet? Supports Web3Forms or Formspree.
+  var keyEl = form.querySelector('[name="access_key"]');
+  var web3Configured =
+    action.indexOf("web3forms.com") !== -1 &&
+    keyEl && keyEl.value.indexOf("YOUR_WEB3FORMS") === -1 && keyEl.value.length > 10;
+  var formspreeConfigured =
+    action.indexOf("formspree.io") !== -1 && action.indexOf("YOUR_FORM_ID") === -1;
+  var backendConfigured = web3Configured || formspreeConfigured;
 
   function showStatus(msg, kind) {
     if (!statusEl) return;
@@ -85,8 +93,8 @@
       child_age: form.child_age ? form.child_age.value : ""
     };
 
-    // If Formspree isn't set up yet, fall back to WhatsApp so no lead is lost.
-    if (!formspreeConfigured) {
+    // If no email backend is set up yet, fall back to WhatsApp so no lead is lost.
+    if (!backendConfigured) {
       e.preventDefault();
       track("form_submit_fallback_whatsapp");
       window.open(whatsappFallback(data), "_blank");
@@ -94,7 +102,7 @@
       return;
     }
 
-    // Formspree configured → submit via fetch for a smooth, no-reload UX.
+    // Backend configured → submit via fetch for a smooth, no-reload UX.
     e.preventDefault();
     var btn = form.querySelector('button[type="submit"]');
     if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
@@ -106,13 +114,14 @@
       headers: { Accept: "application/json" }
     })
       .then(function (res) {
-        if (res.ok) {
-          showSuccess();
-        } else {
-          return res.json().then(function () {
+        // Web3Forms returns 200 with { success: true|false }. Formspree returns ok.
+        return res.json().catch(function () { return {}; }).then(function (json) {
+          if (res.ok && json.success !== false) {
+            showSuccess();
+          } else {
             throw new Error("submit_failed");
-          });
-        }
+          }
+        });
       })
       .catch(function () {
         // Network/Formspree error → don't lose the lead, offer WhatsApp.
