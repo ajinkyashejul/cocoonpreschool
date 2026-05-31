@@ -173,7 +173,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------------- Gallery ---------------- */
 .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: .8rem; }
-.g-tile { position: relative; margin: 0; aspect-ratio: 4/3; border-radius: var(--radius-sm); overflow: hidden; background: var(--teal-soft); box-shadow: var(--shadow-sm); }
+.g-tile { position: relative; margin: 0; aspect-ratio: 3/4; border-radius: var(--radius-sm); overflow: hidden; background: var(--teal-soft); box-shadow: var(--shadow-sm); }
 .g-tile img { width: 100%; height: 100%; object-fit: cover; }
 .g-ph { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; color: var(--teal); font-weight: 800; font-size: .9rem; }
 .g-tile.g-empty img { display: none; }
